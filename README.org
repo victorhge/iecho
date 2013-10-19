@@ -1,14 +1,14 @@
 * iecho - (Inputs ECHO) visualize input events and corresponding commands
-This package is a minor mode which visualizes what you types and corresponding
-commands. It is useful for feature demos and trainings.  Your audience sees the
-keys and commands. They will understand your demonstration better.
+  This package is a minor mode which visualizes what you types and corresponding
+  commands. It is useful for feature demos and trainings.  Your audience sees
+  the keys and commands. They will understand your demonstration better.
 
 * Installation:
-Put in your .emacs or site-start.el file the following lines:
+  Put in your .emacs or site-start.el file the following lines:
 #+BEGIN_SRC lisp
   (require 'iecho)
 #+END_SRC
-then
+  then
 #+BEGIN_QUOTE
   M-x iecho-mode
 #+END_QUOTE
