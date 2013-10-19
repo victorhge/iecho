@@ -54,6 +54,7 @@
 ;; * customize overlay
 ;; ** face
 ;; ** position (not only around the point)
+;; **
 ;; * problem
 ;; ** problems in terminal
 ;;
@@ -71,7 +72,7 @@
 (defcustom iecho-show-function-default 'iecho-in-window
   "The default function to show the input events."
   :type 'function
-  :options '(iecho-in-window iecho-in-frame iecho-in-tooltips)
+  :options '(iecho-in-window iecho-in-frame iecho-in-tooltips iecho-in-overlay)
   :group 'iecho)
 
 (defcustom iecho-show-functions '(iecho-in-window iecho-in-frame iecho-in-tooltips iecho-in-overlay)
@@ -203,7 +204,7 @@ See also `iecho-show-function'."
     (display-buffer iecho-buffer '((display-buffer-reuse-window
                                     display-buffer-pop-up-window)
                                    (window-height . 0.2)
-                                   (window-width . 0.2)
+                                   (window-width . 0.3)
                                    ))
     (with-current-buffer iecho-buffer
       (set-window-point (get-buffer-window) (line-beginning-position)))))
@@ -260,6 +261,9 @@ See also `iecho-show-function'."
 (defun iecho-mode-on ()
   "Turn on iecho mode"
   (interactive)
+  (when (not (display-graphic-p))
+    (setq iecho-show-functions '(iecho-in-window iecho-in-overlay))
+    (setq iecho-show-function 'iecho-in-window))
   (unless (and iecho-buffer (buffer-live-p iecho-buffer))
     (setq iecho-buffer (get-buffer-create " *iecho*"))
     (with-current-buffer iecho-buffer
@@ -279,8 +283,6 @@ See also `iecho-show-function'."
         (raise-frame old-frame))
       (when (buffer-live-p old-buffer)
         (set-buffer old-buffer))))
-  ;; (iecho-in-window)
-  ;; (set-window-dedicated-p (get-buffer-window iecho-buffer) t)
   (add-hook 'pre-command-hook 'iecho-this-command)
   (add-hook 'post-command-hook iecho-show-function))
 
@@ -289,8 +291,14 @@ See also `iecho-show-function'."
   (interactive)
   (remove-hook 'pre-command-hook 'iecho-this-command)
   (remove-hook 'post-command-hook iecho-show-function)
+
+  (let (( window (get-buffer-window iecho-buffer)))
+    (if window
+      (delete-window window)))
   (when (frame-live-p iecho-frame)
-    (delete-frame iecho-frame)))
+    (delete-frame iecho-frame))
+  (popup-delete iecho-overlay))
+
 
 (provide 'iecho)
 
